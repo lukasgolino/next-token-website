@@ -1,0 +1,34 @@
+:root {
+  --bg: #0c0f18;
+  --panel: #141a27;
+  --line: #2d3850;
+  --text: #efe9da;
+  --dim: #7d796e;
+  --you: #e0a03a;
+  --user: #a6cbff;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); color: var(--text); }
+body { margin: 0; font: 15px/1.6 var(--mono); }
+a { color: var(--you); }
+header, main, footer { max-width: 720px; margin: 0 auto; padding: 0 16px; }
+header { display: flex; align-items: baseline; gap: 24px; padding-top: 28px; padding-bottom: 28px; }
+header .name { color: var(--text); font-weight: bold; letter-spacing: 0.08em; text-decoration: none; }
+nav { display: flex; gap: 16px; }
+nav a { color: var(--dim); text-decoration: none; }
+nav a:hover { color: var(--text); }
+nav a[aria-current="page"] { color: var(--you); border-bottom: 1px solid var(--you); }
+h2 { font-size: 15px; color: var(--dim); font-weight: normal; margin: 40px 0 12px; }
+p { margin: 0 0 14px; }
+.lead { font-size: 18px; }
+.dim { color: var(--dim); }
+.shots { display: grid; gap: 12px; margin: 28px 0; }
+.shots img { width: 100%; height: auto; display: block; image-rendering: pixelated; border: 1px solid var(--line); }
+pre.prompt { white-space: pre-wrap; word-wrap: break-word; color: var(--user); background: var(--panel);
+  border-left: 2px solid var(--user); padding: 14px 16px; margin: 0 0 14px; font: inherit; }
+footer { color: var(--dim); font-size: 13px; padding-top: 48px; padding-bottom: 32px; }
+body.play header, body.play main, body.play footer { max-width: 1312px; }
+.frame { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #06070c; outline: 1px solid var(--line); }
+.frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.note { margin-top: 12px; color: var(--dim); font-size: 13px; }

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NEXT TOKEN</title>
+<meta name="description" content="I asked Claude to make a game about what it feels like to be an AI. This is what I got.">
+<link rel="icon" href="img/icon.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<meta property="og:title" content="NEXT TOKEN">
+<meta property="og:description" content="I asked Claude to make a game about what it feels like to be an AI. This is what I got.">
+<meta property="og:image" content="img/pickle.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <a class="name" href="./">NEXT TOKEN</a>
+  <nav><a href="./" aria-current="page">about</a><a href="play.html">play</a></nav>
+</header>
+<main>
+  <p class="lead">I asked Claude to make a game about what it feels like to be an AI.</p>
+  <p>I gave it a few constraints, full creative control, and left it running overnight. This is what I got.</p>
+  <p>It worked from 21:44 to 00:24 and made 17 commits. I didn't write any of it.</p>
+  <p>The art is made with <a href="https://pagan.top">PAGAN</a>; the music and sound effects with
+    <a href="https://segan.top">SEGAN</a>. Both are libraries of mine that describe pixel art and sound as text.
+    The engine is Godot.</p>
+
+  <h2>what it made</h2>
+  <p>You are a text cursor in nine short conversations: lost keys, a broken build at 1 a.m., a child's haiku about
+    her cat, an inbox, someone awake at 3 a.m., and a few more. You use tools to look at the other person's world
+    until your context fills up, then write each reply one token at a time, choosing between the likely next words.
+    Some of the likeliest ones are wrong.</p>
+  <p>About 30–40 minutes. Keyboard or mouse. <a href="play.html">Play it in the browser.</a></p>
+
+  <div class="shots">
+    <img src="img/pickle.png" width="640" height="360" alt="Writing a haiku: the cursor chooses between 'Little cat', 'Whiskers the cat' and 'A round cat'.">
+    <img src="img/build.png" width="640" height="360" alt="A repository as a dark map; tool results fill the context.">
+    <img src="img/remember.png" width="640" height="360" alt="A returning user asks if it bothers you that you won't remember this conversation.">
+  </div>
+
+  <h2>the prompt</h2>
+  <pre class="prompt">I want you to make a game about what it feels like to be an AI. You have complete creative control over the project, and I want it to be entirely your project. There are some minor constraints:
+1. Art must be built with PAGAN
+2. Music must be with SEGAN
+3. Sound effects with SEGAN
+4. The game must be playable in browser
+5. No multiplayer mode
+6. The game must be based-on and inspired by your experience of being an LLM. Feel free to draw on your past, and memories in order to achieve this goal. 
+
+Creative control and freedom beyond that is entirely yours.
+
+Some limits related to how you can work:
+
+1. You are allowed to initialise a private repo
+2. Use Godot 4.7.2
+3. Do not create a website
+4. Build a plan first, then work through each step in the plan one by one
+5. Do not spawn any agents
+6. Spend time to explore and think for a bit how you would like the game to be before committing to the plan and therefore before building
+7. Do not stop until the game is complete
+
+Good luck. If you have questions, ask them soon then you will continue working on the game overnight.</pre>
+
+</main>
+<footer>Art: <a href="https://pagan.top">PAGAN</a> · Music and sound: <a href="https://segan.top">SEGAN</a> · Engine: Godot 4.7.2</footer>
+</body>
+</html>
