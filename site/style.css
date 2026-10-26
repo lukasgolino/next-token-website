@@ -32,3 +32,7 @@ body.play header, body.play main, body.play footer { max-width: 1312px; }
 .frame { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #06070c; outline: 1px solid var(--line); }
 .frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 .note { margin-top: 12px; color: var(--dim); font-size: 13px; }
+#player { width: 100%; margin: 0 0 20px; }
+.tracks { padding-left: 2.5em; margin: 0; }
+.tracks a { color: var(--dim); text-decoration: none; }
+.tracks a:hover, .tracks a[aria-current] { color: var(--you); }

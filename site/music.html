@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NEXT TOKEN · music</title>
+<meta name="description" content="The music from NEXT TOKEN.">
+<link rel="icon" href="img/icon.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <a class="name" href="./">NEXT TOKEN</a>
+  <nav><a href="./">about</a><a href="play.html">play</a><a href="music.html" aria-current="page">music</a></nav>
+</header>
+<main>
+  <audio id="player" controls preload="none"></audio>
+  <ol class="tracks">
+    <li><a href="music/title.ogg">title</a></li>
+    <li><a href="music/speak_hello.ogg">speak_hello</a></li>
+    <li><a href="music/reach_home.ogg">reach_home</a></li>
+    <li><a href="music/speak_keys.ogg">speak_keys</a></li>
+    <li><a href="music/reach_repo.ogg">reach_repo</a></li>
+    <li><a href="music/speak_build.ogg">speak_build</a></li>
+    <li><a href="music/speak_pickle.ogg">speak_pickle</a></li>
+    <li><a href="music/reach_inbox.ogg">reach_inbox</a></li>
+    <li><a href="music/speak_inbox.ogg">speak_inbox</a></li>
+    <li><a href="music/night.ogg">night</a></li>
+    <li><a href="music/speak_many.ogg">speak_many</a></li>
+    <li><a href="music/reach_overnight.ogg">reach_overnight</a></li>
+    <li><a href="music/speak_overnight.ogg">speak_overnight</a></li>
+    <li><a href="music/speak_remember.ogg">speak_remember</a></li>
+  </ol>
+</main>
+<footer>Music: <a href="https://segan.top">SEGAN</a></footer>
+<script>
+const player = document.getElementById("player");
+const links = [...document.querySelectorAll(".tracks a")];
+let current = -1;
+function play(i) {
+  links[current]?.removeAttribute("aria-current");
+  current = i;
+  links[i].setAttribute("aria-current", "true");
+  player.src = links[i].href;
+  player.play();
+}
+links.forEach((a, i) => a.addEventListener("click", e => { e.preventDefault(); play(i); }));
+player.addEventListener("ended", () => { if (current + 1 < links.length) play(current + 1); });
+</script>
+</body>
+</html>
