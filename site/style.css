@@ -23,7 +23,7 @@ h2 { font-size: 15px; color: var(--dim); font-weight: normal; margin: 40px 0 12p
 p { margin: 0 0 14px; }
 .lead { font-size: 18px; }
 .dim { color: var(--dim); }
-.shots { display: grid; gap: 12px; margin: 28px 0; }
+.shots { display: grid; gap: 12px; margin: 0 0 28px; }
 .shots img { width: 100%; height: auto; display: block; image-rendering: pixelated; border: 1px solid var(--line); }
 pre.prompt { white-space: pre-wrap; word-wrap: break-word; color: var(--user); background: var(--panel);
   border-left: 2px solid var(--user); padding: 14px 16px; margin: 0 0 14px; font: inherit; }
