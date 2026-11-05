@@ -1,4 +1,4 @@
-# Check site/ on every push to main and every PR: local links resolve inside site/ (tools/check_site.py).
+# Check site/: local links resolve inside site/ (tools/check_site.py).
 name: check
 
 # Manual only (Actions minutes): run once per PR, just before merge, with `gh workflow run check --ref <branch>`.
