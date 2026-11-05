@@ -2,8 +2,8 @@
 """Sanity checks on site/ (no build step, so this runs on the committed files): every local href/src resolves to a
 file inside site/, each page's
 canonical link is its own URL, the sitemap lists exactly those URLs, robots.txt points to it, and
-every page loads the analytics beacon once."""
-import re
+every page (and game/index.html) loads the analytics beacon exactly once."""
+import json
 import sys
 import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
@@ -12,7 +12,8 @@ from urllib.parse import unquote, urlsplit
 
 SITE = Path(__file__).resolve().parent.parent / "site"
 ORIGIN = "https://next-token.dev/"
-BEACON = re.compile(r"static\.cloudflareinsights\.com/beacon\.min\.js\"[^>]*data-cf-beacon='\{\"token\": \"1c2ae262b9034043ac24d179d34c8a27\"\}'")
+TOKEN = "1c2ae262b9034043ac24d179d34c8a27"  # Cloudflare Web Analytics site token
+BEACON_SRC = "https://static.cloudflareinsights.com/beacon.min.js"
 PAGES = sorted(p for p in SITE.glob("*.html"))  # site/game/ is the exported Godot build, not ours to lint
 errors = []
 canonicals = {}
@@ -25,11 +26,17 @@ class Refs(HTMLParser):
         self.refs = []
         self.canonical = []
         self.og_url = []
+        self.beacons = []
 
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
         if tag == "link" and "canonical" in (a.get("rel") or "").lower().split():
             self.canonical.append(a.get("href"))
+        if tag == "script" and a.get("src") == BEACON_SRC:
+            try:
+                self.beacons.append(json.loads(a.get("data-cf-beacon") or "").get("token"))
+            except (ValueError, AttributeError):
+                self.beacons.append(None)
         if tag == "meta" and a.get("property") == "og:url":
             self.og_url.append(a.get("content"))
         if tag == "meta" and a.get("property") == "og:image" and a.get("content"):
@@ -41,10 +48,9 @@ class Refs(HTMLParser):
 
 for page in PAGES:
     parser = Refs()
-    html = page.read_text(encoding="utf-8")
-    parser.feed(html)
-    if len(BEACON.findall(html)) != 1:
-        errors.append(f"{page.name}: expected exactly one analytics beacon with this site's token")
+    parser.feed(page.read_text(encoding="utf-8"))
+    if parser.beacons != [TOKEN]:
+        errors.append(f"{page.name}: analytics beacons {parser.beacons}, expected exactly [{TOKEN!r}]")
     canonicals[page] = parser.canonical
     og_urls[page] = parser.og_url
     for ref in parser.refs:
@@ -60,6 +66,13 @@ for page in PAGES:
             errors.append(f"{page.relative_to(SITE)}: {ref} points outside site/")
         elif not target.exists():
             errors.append(f"{page.relative_to(SITE)}: broken link {ref}")
+
+# The exported game page is opened on its own too ("Open it on its own page"); update_game.sh tags it.
+game = Refs()
+game.feed((SITE / "game" / "index.html").read_text(encoding="utf-8"))
+if game.beacons != [TOKEN]:
+    errors.append(f"game/index.html: analytics beacons {game.beacons}, expected exactly [{TOKEN!r}] (run tools/update_game.sh)")
+
 
 def url_of(page):
     # The URL each page is known by: the sitemap entry and the page's canonical link must both be this.
