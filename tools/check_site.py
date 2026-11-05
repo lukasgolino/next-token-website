@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Sanity checks on site/ (no build step, so this runs on the committed files): every local href/src resolves to a
-file inside site/, the
-sitemap lists exactly the pages, and robots.txt points to it."""
+file inside site/, each page's
+canonical link is its own URL, the sitemap lists exactly those URLs, and robots.txt points to it."""
 import sys
 import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
@@ -12,14 +12,25 @@ SITE = Path(__file__).resolve().parent.parent / "site"
 ORIGIN = "https://next-token.dev/"
 PAGES = sorted(p for p in SITE.glob("*.html"))  # site/game/ is the exported Godot build, not ours to lint
 errors = []
+canonicals = {}
+og_urls = {}
 
 
 class Refs(HTMLParser):
     def __init__(self):
         super().__init__()
         self.refs = []
+        self.canonical = []
+        self.og_url = []
 
     def handle_starttag(self, tag, attrs):
+        a = dict(attrs)
+        if tag == "link" and "canonical" in (a.get("rel") or "").lower().split():
+            self.canonical.append(a.get("href"))
+        if tag == "meta" and a.get("property") == "og:url":
+            self.og_url.append(a.get("content"))
+        if tag == "meta" and a.get("property") == "og:image" and a.get("content"):
+            self.refs.append(a["content"])
         for k, v in attrs:
             if k in ("href", "src") and v:
                 self.refs.append(v)
@@ -28,9 +39,12 @@ class Refs(HTMLParser):
 for page in PAGES:
     parser = Refs()
     parser.feed(page.read_text(encoding="utf-8"))
+    canonicals[page] = parser.canonical
+    og_urls[page] = parser.og_url
     for ref in parser.refs:
         u = urlsplit(ref)
-        if u.scheme or u.netloc or ref.startswith(("#", "mailto:", "data:")):
+        own = ref.startswith(ORIGIN)  # absolute links to this site are checked like relative ones
+        if (u.scheme or u.netloc or ref.startswith(("#", "mailto:", "data:"))) and not own:
             continue
         path = unquote(u.path)
         target = (SITE / path.lstrip("/")) if path.startswith("/") else (page.parent / path)
@@ -42,6 +56,7 @@ for page in PAGES:
             errors.append(f"{page.relative_to(SITE)}: broken link {ref}")
 
 def url_of(page):
+    # The URL each page is known by: the sitemap entry and the page's canonical link must both be this.
     return ORIGIN + ("" if page.name == "index.html" else page.name)
 
 
@@ -53,6 +68,12 @@ except ET.ParseError as e:
     root = ET.Element(NS + "urlset")
 if root.tag != NS + "urlset":
     errors.append(f"sitemap.xml: root is {root.tag}, not a sitemaps.org <urlset>")
+for page, c in canonicals.items():
+    if c != [url_of(page)]:
+        errors.append(f"{page.name}: canonical is {c}, expected [{url_of(page)!r}]")
+    if og_urls[page] != [url_of(page)]:
+        errors.append(f"{page.name}: og:url is {og_urls[page]}, expected [{url_of(page)!r}]")
+
 listed = [(loc.text or "").strip() for loc in root.iter(NS + "loc")]
 errors += [f"sitemap.xml: {u} listed twice" for u in sorted({u for u in listed if listed.count(u) > 1})]
 pages = {url_of(p) for p in PAGES}

@@ -8,6 +8,8 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- Canonical links and `og:url` on every page; `og:image` is now absolute. `check_site.py` checks that each page's
+  canonical matches its sitemap URL ([#3](https://github.com/lukasgolino/next-token-website/issues/3)).
 - `sitemap.xml` and `robots.txt`; `check_site.py` checks that the sitemap lists exactly the pages
   ([#2](https://github.com/lukasgolino/next-token-website/issues/2)).
 - CHANGELOG.md, a check workflow (`tools/check_site.py`: local links resolve inside site/) on pushes to main and
