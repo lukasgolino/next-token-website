@@ -1,4 +1,4 @@
-# Check site/ on every push to main and every PR: pages parse, local links resolve (tools/check_site.py).
+# Check site/ on every push to main and every PR: local links resolve inside site/ (tools/check_site.py).
 name: check
 
 on:

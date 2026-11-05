@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Sanity checks on site/ (no build step, so this runs on the committed files): every page parses and every
-local href/src resolves to a file."""
+"""Sanity checks on site/ (no build step, so this runs on the committed files): every local href/src resolves to a
+file inside site/."""
 import sys
 from html.parser import HTMLParser
 from pathlib import Path
-from urllib.parse import urlsplit
+from urllib.parse import unquote, urlsplit
 
 SITE = Path(__file__).resolve().parent.parent / "site"
 PAGES = sorted(p for p in SITE.glob("*.html"))  # site/game/ is the exported Godot build, not ours to lint
@@ -29,11 +29,13 @@ for page in PAGES:
         u = urlsplit(ref)
         if u.scheme or u.netloc or ref.startswith(("#", "mailto:", "data:")):
             continue
-        path = u.path
+        path = unquote(u.path)
         target = (SITE / path.lstrip("/")) if path.startswith("/") else (page.parent / path)
         if target.is_dir():
             target = target / "index.html"
-        if not target.exists():
+        if not target.resolve().is_relative_to(SITE):
+            errors.append(f"{page.relative_to(SITE)}: {ref} points outside site/")
+        elif not target.exists():
             errors.append(f"{page.relative_to(SITE)}: broken link {ref}")
 
 for e in errors:
