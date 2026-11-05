@@ -5,3 +5,6 @@ Static site for NEXT TOKEN: an about page (`site/index.html`) and the web build 
 
 Update the game: run `tools/export_web.sh` in `next-token`, then `tools/update_game.sh` here, commit, push.
 Screenshots in `site/img/` are Movie Maker frames from the game.
+
+`site/robots.txt` is served as-is through Cloudflare. If Cloudflare's Bot Preference Sync is ever turned on with a
+Block/Disallow policy, Cloudflare prepends its own rules to it.
