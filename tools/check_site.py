@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Sanity checks on site/ (no build step, so this runs on the committed files): every local href/src resolves to a
 file inside site/, each page's
-canonical link is its own URL, the sitemap lists exactly those URLs, and robots.txt points to it."""
+canonical link is its own URL, the sitemap lists exactly those URLs, robots.txt points to it, and
+every page loads the analytics beacon once."""
+import re
 import sys
 import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
@@ -10,6 +12,7 @@ from urllib.parse import unquote, urlsplit
 
 SITE = Path(__file__).resolve().parent.parent / "site"
 ORIGIN = "https://next-token.dev/"
+BEACON = re.compile(r"static\.cloudflareinsights\.com/beacon\.min\.js\"[^>]*data-cf-beacon='\{\"token\": \"1c2ae262b9034043ac24d179d34c8a27\"\}'")
 PAGES = sorted(p for p in SITE.glob("*.html"))  # site/game/ is the exported Godot build, not ours to lint
 errors = []
 canonicals = {}
@@ -38,7 +41,10 @@ class Refs(HTMLParser):
 
 for page in PAGES:
     parser = Refs()
-    parser.feed(page.read_text(encoding="utf-8"))
+    html = page.read_text(encoding="utf-8")
+    parser.feed(html)
+    if len(BEACON.findall(html)) != 1:
+        errors.append(f"{page.name}: expected exactly one analytics beacon with this site's token")
     canonicals[page] = parser.canonical
     og_urls[page] = parser.og_url
     for ref in parser.refs:
