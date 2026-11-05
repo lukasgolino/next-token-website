@@ -1,0 +1,15 @@
+# Check site/ on every push to main and every PR: local links resolve inside site/ (tools/check_site.py).
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  site:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - run: python3 tools/check_site.py
