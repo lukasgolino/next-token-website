@@ -50,5 +50,7 @@ function play(i) {
 links.forEach((a, i) => a.addEventListener("click", e => { e.preventDefault(); play(i); }));
 player.addEventListener("ended", () => { if (current + 1 < links.length) play(current + 1); });
 </script>
+<!-- Cloudflare Web Analytics: cookieless, no consent banner needed. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "1c2ae262b9034043ac24d179d34c8a27"}'></script>
 </body>
 </html>

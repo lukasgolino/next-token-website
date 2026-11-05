@@ -8,6 +8,9 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- Cloudflare Web Analytics beacon on every page and on the standalone game page (cookieless; `update_game.sh` re-tags the game after each
+  export). `check_site.py` checks each loads it exactly once
+  ([#4](https://github.com/lukasgolino/next-token-website/issues/4)).
 - Canonical links and `og:url` on every page; `og:image` is now absolute. `check_site.py` checks that each page's
   canonical matches its sitemap URL ([#3](https://github.com/lukasgolino/next-token-website/issues/3)).
 - `sitemap.xml` and `robots.txt`; `check_site.py` checks that the sitemap lists exactly the pages
