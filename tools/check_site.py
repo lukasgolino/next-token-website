@@ -13,6 +13,7 @@ ORIGIN = "https://next-token.dev/"
 PAGES = sorted(p for p in SITE.glob("*.html"))  # site/game/ is the exported Godot build, not ours to lint
 errors = []
 canonicals = {}
+og_urls = {}
 
 
 class Refs(HTMLParser):
@@ -20,11 +21,16 @@ class Refs(HTMLParser):
         super().__init__()
         self.refs = []
         self.canonical = []
+        self.og_url = []
 
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
-        if tag == "link" and a.get("rel") == "canonical":
+        if tag == "link" and "canonical" in (a.get("rel") or "").lower().split():
             self.canonical.append(a.get("href"))
+        if tag == "meta" and a.get("property") == "og:url":
+            self.og_url.append(a.get("content"))
+        if tag == "meta" and a.get("property") == "og:image" and a.get("content"):
+            self.refs.append(a["content"])
         for k, v in attrs:
             if k in ("href", "src") and v:
                 self.refs.append(v)
@@ -34,9 +40,11 @@ for page in PAGES:
     parser = Refs()
     parser.feed(page.read_text(encoding="utf-8"))
     canonicals[page] = parser.canonical
+    og_urls[page] = parser.og_url
     for ref in parser.refs:
         u = urlsplit(ref)
-        if u.scheme or u.netloc or ref.startswith(("#", "mailto:", "data:")):
+        own = ref.startswith(ORIGIN)  # absolute links to this site are checked like relative ones
+        if (u.scheme or u.netloc or ref.startswith(("#", "mailto:", "data:"))) and not own:
             continue
         path = unquote(u.path)
         target = (SITE / path.lstrip("/")) if path.startswith("/") else (page.parent / path)
@@ -63,6 +71,8 @@ if root.tag != NS + "urlset":
 for page, c in canonicals.items():
     if c != [url_of(page)]:
         errors.append(f"{page.name}: canonical is {c}, expected [{url_of(page)!r}]")
+    if og_urls[page] != [url_of(page)]:
+        errors.append(f"{page.name}: og:url is {og_urls[page]}, expected [{url_of(page)!r}]")
 
 listed = [(loc.text or "").strip() for loc in root.iter(NS + "loc")]
 errors += [f"sitemap.xml: {u} listed twice" for u in sorted({u for u in listed if listed.count(u) > 1})]
