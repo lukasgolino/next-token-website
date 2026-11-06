@@ -1,0 +1,11 @@
+# NEXT TOKEN
+
+> NEXT TOKEN is a free, short (about 40 minutes) narrative game about what it is like to be a language model, playable in the browser. You play a blinking text cursor: an assistant living through a handful of conversations, where every mechanic is a real property of how a model works (a context window that fills, tools that return fragments, text written forward one token at a time, instructions hidden in data). Made by Lukas Golino in Godot 4, with pixel art by PAGAN and music and sound by SEGAN.
+
+## Links
+
+- [Home](https://next-token.dev/)
+- [Play in the browser](https://next-token.dev/play.html)
+- [Soundtrack](https://next-token.dev/music.html)
+- Developer: Lukas Golino (https://lukasgolino.com/)
+- Tools it is built with: PAGAN (pixel art, https://pagan.top/) and SEGAN (audio, https://segan.top/)
