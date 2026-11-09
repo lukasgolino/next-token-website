@@ -2,7 +2,7 @@
 """Sanity checks on site/ (no build step, so this runs on the committed files): every local href/src resolves to a
 file inside site/, each page's
 canonical link is its own URL, the sitemap lists exactly those URLs, robots.txt points to it, and
-every page (and game/index.html) loads the analytics beacon exactly once."""
+every page (and game/index.html) loads the analytics beacon and the Umami tag exactly once."""
 import json
 import sys
 import xml.etree.ElementTree as ET
@@ -14,6 +14,8 @@ SITE = Path(__file__).resolve().parent.parent / "site"
 ORIGIN = "https://next-token.dev/"
 TOKEN = "1c2ae262b9034043ac24d179d34c8a27"  # Cloudflare Web Analytics site token
 BEACON_SRC = "https://static.cloudflareinsights.com/beacon.min.js"
+UMAMI_SRC = "https://cloud.umami.is/script.js"
+UMAMI_ID = "6c3ba9da-9af9-49a9-a575-90c9cace445c"  # one Umami website for all our sites
 PAGES = sorted(p for p in SITE.glob("*.html"))  # site/game/ is the exported Godot build, not ours to lint
 errors = []
 canonicals = {}
@@ -27,6 +29,7 @@ class Refs(HTMLParser):
         self.canonical = []
         self.og_url = []
         self.beacons = []
+        self.umami = []
 
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
@@ -37,6 +40,8 @@ class Refs(HTMLParser):
                 self.beacons.append(json.loads(a.get("data-cf-beacon") or "").get("token"))
             except (ValueError, AttributeError):
                 self.beacons.append(None)
+        if tag == "script" and a.get("src") == UMAMI_SRC:
+            self.umami.append(a.get("data-website-id"))
         if tag == "meta" and a.get("property") == "og:url":
             self.og_url.append(a.get("content"))
         if tag == "meta" and a.get("property") == "og:image" and a.get("content"):
@@ -51,6 +56,8 @@ for page in PAGES:
     parser.feed(page.read_text(encoding="utf-8"))
     if parser.beacons != [TOKEN]:
         errors.append(f"{page.name}: analytics beacons {parser.beacons}, expected exactly [{TOKEN!r}]")
+    if parser.umami != [UMAMI_ID]:
+        errors.append(f"{page.name}: Umami tags {parser.umami}, expected exactly [{UMAMI_ID!r}]")
     canonicals[page] = parser.canonical
     og_urls[page] = parser.og_url
     for ref in parser.refs:
@@ -72,6 +79,8 @@ game = Refs()
 game.feed((SITE / "game" / "index.html").read_text(encoding="utf-8"))
 if game.beacons != [TOKEN]:
     errors.append(f"game/index.html: analytics beacons {game.beacons}, expected exactly [{TOKEN!r}] (run tools/update_game.sh)")
+if game.umami != [UMAMI_ID]:
+    errors.append(f"game/index.html: Umami tags {game.umami}, expected exactly [{UMAMI_ID!r}] (run tools/update_game.sh)")
 
 
 def url_of(page):

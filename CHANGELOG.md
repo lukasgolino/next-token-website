@@ -6,6 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-09
+
+### Added
+
+- Umami analytics alongside Cloudflare Web Analytics: cookieless, so still no consent banner, and it adds
+  per-visit page journeys (entry page, pages in order, exit), which Cloudflare's aggregate counts can't show.
+  All our sites share one Umami website; the Host filter separates them.
+
 ## [0.2.0] - 2026-11-06
 
 ### Added
@@ -37,6 +45,7 @@ All notable changes to this project are documented here. The format follows
   every PR, and a release workflow that publishes a GitHub release for each `vX.Y.Z` tag, with that version's
   CHANGELOG section as the notes ([#5](https://github.com/lukasgolino/next-token-website/issues/5)).
 
-[Unreleased]: https://github.com/lukasgolino/next-token-website/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/lukasgolino/next-token-website/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/lukasgolino/next-token-website/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/lukasgolino/next-token-website/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/lukasgolino/next-token-website/releases/tag/v0.1.0
